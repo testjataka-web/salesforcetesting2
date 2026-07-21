@@ -173,6 +173,44 @@ CaseMilestoneLockGuidance (L2 Case Entitlement Milestone lock fixture)
 See also:
 - [KNOWLEDGE_TRANSLATION_RUNBOOK.md](KNOWLEDGE_TRANSLATION_RUNBOOK.md)
 - [KNOWLEDGE_CASE_ARTICLE_RUNBOOK.md](KNOWLEDGE_CASE_ARTICLE_RUNBOOK.md)
+- [tickets/README.md](tickets/README.md) — golden L1 Sales/Service ticket eval corpus
+
+---
+
+## L1 ticket CSV ↔ MCP scenario cross-links
+
+Golden helpdesk tickets live in [`docs/tickets/`](tickets/) as Sales/Service CSV tables (loaded directly by the backend).
+They are **eval fixtures** (not live Salesforce Cases). Notable tickets map to the MCP matrix above:
+
+| Eval ticket | Cloud / area | Linked MCP scenarios | Repo artifacts |
+|-------------|--------------|----------------------|----------------|
+| `TSE-001` | Service / Knowledge Management | `L1-KC1`, `L1-KC2`, `L1-KC3` | `KnowledgeCaseResolutionService`, `KnowledgeCaseResolutionController` |
+| `TSE-003` | Service / Knowledge Management | `L1-K1`, `L1-K2`, `L1-K3`, `L2-K1` | `KnowledgeTranslationPublishService`, `KnowledgeTranslationQueueHelper` |
+| `TSE-009` | Service / Contracts & Entitlements | `L2-CM1`, `L2-CM2`, `L2-CM3` | `CaseMilestoneLockGuidance` |
+
+**Suites** (CSV cloud filters only — no curated id decks):
+
+| Suite id | Meaning |
+|----------|---------|
+| `sales_l1` | All Sales Cloud L1 CSV rows |
+| `service_l1` | All Service Cloud L1 CSV rows |
+| `all_l1` | Full CSV corpus (default) |
+
+Backend eval entry points (no Salesforce Case writeback):
+
+- `GET /auto-resolution/ticket-eval/suites`
+- `GET /auto-resolution/ticket-eval/tickets?suite=all_l1`
+- `POST /auto-resolution/ticket-eval/tickets/:ticketId/run`
+- `POST /auto-resolution/ticket-eval/suites/:suiteId/run`
+
+Use end-user phrasing from the CSV problem column as variants of the MCP questions — same ground truth, richer natural language.
+
+### Demo situations
+
+Auto Resolution Demo lists tickets from the CSV suites (`all_l1` by default). The situation text is the ticket `issueText` / `subject`.
+
+Org fixtures (optional live writeback) are seeded by `JatakaDemoFixtureService` / REST `/jataka/v1/demo-fixtures` when the Salesforce connector supports it for that ticket id.
+Dashboard page: `/auto-resolution-demo`.
 
 ---
 
